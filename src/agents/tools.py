@@ -1,4 +1,6 @@
 from langchain_core.tools import tool
+from langchain_core.tools.structured import StructuredTool
+from langmem import create_manage_memory_tool, create_search_memory_tool
 
 class AgentTool():
     @tool
@@ -22,3 +24,23 @@ class AgentTool():
     def check_calendar_availability(day: str) -> str:
         """Check calendar availability for a given day."""
         return f"Available times on {day}: 9:00 AM, 2:00 PM, 4:00 PM"
+
+    def manage_memory_tool() -> StructuredTool:
+        """ manage memory for tool"""
+        return create_manage_memory_tool(
+            namespace=(
+                "email_assistant", 
+                "{langgraph_user_id}",
+                "collection"
+            )
+        )
+    
+    def search_memory_tool() -> StructuredTool:
+        """ search memory for tool"""
+        return create_search_memory_tool(
+            namespace=(
+                "email_assistant",
+                "{langgraph_user_id}",
+                "collection"
+            )
+        )

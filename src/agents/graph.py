@@ -4,13 +4,15 @@ from langgraph.types import Command
 from src.agents.agent import EmailAgent
 from src.agents.state import Router, State
 from src.agents.prompts import PromptTemplate
+from src.agents.memory import MemoryStore
 from src.agents.tools import AgentTool
 from src.agents.utils import profile, prompt_instructions
 from src.llm.models import LLMModel
 
 llm = LLMModel().get_model("qwen2.5:7b")
 llm_router = llm.with_structured_output(Router)
-tools = [AgentTool.write_email, AgentTool.schedule_meeting, AgentTool.check_calendar_availability]
+tools = [AgentTool.write_email, AgentTool.schedule_meeting, AgentTool.check_calendar_availability, AgentTool.manage_memory_tool, AgentTool.search_memory_tool]
+store = MemoryStore.get_memory_store()
 
 def triage_router(state: State) -> Command[
     Literal["response_agent", "__end__"]
@@ -64,7 +66,7 @@ def triage_router(state: State) -> Command[
         raise ValueError(f"Invalid classification: {result.classification}")
     return Command(goto=goto, update=update)
 
-email_agent = EmailAgent(llm=llm, tools=tools)
+email_agent = EmailAgent(llm=llm, tools=tools, store=store)
 react_agent = email_agent.create_agent()
 workflow = StateGraph(State)
 workflow = workflow.add_node(triage_router)
