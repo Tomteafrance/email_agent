@@ -43,7 +43,7 @@ def create_prompt(state):
     ] + state['messages']
 
 
-tools=[write_email, schedule_meeting, check_calendar_availability]
+#tools=[write_email, schedule_meeting, check_calendar_availability]
 agent = create_react_agent(
     llm,
     tools=tools,

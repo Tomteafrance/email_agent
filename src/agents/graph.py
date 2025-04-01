@@ -8,7 +8,7 @@ from src.agents.tools import AgentTool
 from src.agents.utils import profile, prompt_instructions
 from src.llm.models import LLMModel
 
-llm = LLMModel.get_model("qwen2.5:7b")
+llm = LLMModel().get_model("qwen2.5:7b")
 llm_router = llm.with_structured_output(Router)
 tools = [AgentTool.write_email, AgentTool.schedule_meeting, AgentTool.check_calendar_availability]
 
@@ -64,32 +64,10 @@ def triage_router(state: State) -> Command[
         raise ValueError(f"Invalid classification: {result.classification}")
     return Command(goto=goto, update=update)
 
-
+email_agent = EmailAgent(llm=llm, tools=tools)
+react_agent = email_agent.create_agent()
 workflow = StateGraph(State)
 workflow = workflow.add_node(triage_router)
-workflow = workflow.add_node("response_agent", EmailAgent(llm, tools).create_agent())
+workflow = workflow.add_node("response_agent", react_agent)
 workflow = workflow.add_edge(START, "triage_router")
 workflow = workflow.compile()
-
-if __name__ == "__main__":
-    email_input = {
-        "author": "Alice Smith <alice.smith@company.com>",
-        "to": "John Doe <john.doe@company.com>",
-        "subject": "Quick question about API documentation",
-        "email_thread": """Hi John,
-
-    I was reviewing the API documentation for the new authentication service and noticed a few endpoints seem to be missing from the specs. Could you help clarify if this was intentional or if we should update the docs?
-
-    Specifically, I'm looking at:
-    - /auth/refresh
-    - /auth/validate
-
-    Thanks!
-    Alice""",
-    }
-
-    response = workflow.invoke({"email_input": email_input})
-
-    for m in response["messages"]:
-        m.pretty_print()
-

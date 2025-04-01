@@ -9,5 +9,5 @@ class LLMModel(BaseModel):
             "llama3.2:latest"
         ]
 
-    def get_model(self, model_name: str):
+    def get_model(self, model_name: str) -> ChatOllama:
         return ChatOllama(model=model_name)
