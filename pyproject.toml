@@ -9,4 +9,5 @@ dependencies = [
     "langchain-ollama>=0.3.0",
     "langgraph>=0.3.21",
     "langmem>=0.0.17",
+    "typing-extensions>=4.13.0",
 ]

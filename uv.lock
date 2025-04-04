@@ -163,6 +163,7 @@ dependencies = [
     { name = "langchain-ollama" },
     { name = "langgraph" },
     { name = "langmem" },
+    { name = "typing-extensions" },
 ]
 
 [package.metadata]
@@ -171,6 +172,7 @@ requires-dist = [
     { name = "langchain-ollama", specifier = ">=0.3.0" },
     { name = "langgraph", specifier = ">=0.3.21" },
     { name = "langmem", specifier = ">=0.0.17" },
+    { name = "typing-extensions", specifier = ">=4.13.0" },
 ]
 
 [[package]]
